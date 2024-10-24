@@ -1,0 +1,6 @@
+services:
+  php:
+    image: php:8.1-cli-alpine
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
