@@ -20,75 +20,26 @@ Le fichier MissingNumber.php est le fichier php à compléter
 
 */
 
-class MissingNumber{
-    public function __construct($file) {
-        $this->input_filename = $file;
-    }
+class MissingNumber
+{
+    public function __construct(private readonly SplFileInfo $file, int $mode = 0) {}
 
-    public function Main() {
-        $data = $this->readString();
-        $n = $data[0];
-        
-        $result = "";
-        $inputVector = explode(" ", $data[1]);
-
-        /* 
-        * Le code à mettre ici
-        */
-
-        $inputVectorSum = $this->getActualSum($inputVector);
-
-        $result = $this->getTheoricalSum($n, $inputVector[0]) - $inputVectorSum;
-
-        return $result;
-    }
-
-    /**
-     * Calculate the sum of the input vector for n+1 numbers in a row
-     * starting from the first number given in the input vector
-     */
-    public function getTheoricalSum($givenArrayLength, $firstNumber): int
+    public function Main(): int
     {
-        $res = $firstNumber;
+        list(, $data) = explode("\n", file_get_contents($this->file->getRealPath()));
 
-        for($i = 0; $i < $givenArrayLength; $i++ ) {
-            $firstNumber++;
-            $res += $firstNumber;
+        $numbers = array_map('intval', explode(' ', $data));
+        for ($i = 1; $i < count($numbers); ++$i) {
+            $expected = $numbers[$i - 1] + 1;
+            if ($expected !== $numbers[$i]) {
+                return $expected;
+            }
         }
 
-        return $res;
-    }
-
-    /**
-     * calculate the sum of the input vector numbers
-     */
-    public function getActualSum(array $givenArray): int
-    {
-        $res = 0;
-        for ($i = 0; $i < count($givenArray); $i++) {
-            $res += $givenArray[$i];
-        }
-
-        return $res;
-    }
-
-    public function readString() {
-        $file = fopen($this->input_filename, "r");
-
-        if (!$file) {
-            throw new Exception("File not found (404)", 1);
-        }
-
-        $line = array();
-
-        while (!feof($file)){
-            array_push($line, str_replace(PHP_EOL, "", fgets($file)));
-        }
-
-        return $line;
+        return -1;
     }
 }
 
-$o = new MissingNumber($argv[1]);
+$o = new MissingNumber(new SplFileInfo($argv[1]));
 
 echo $o->Main() . PHP_EOL;
